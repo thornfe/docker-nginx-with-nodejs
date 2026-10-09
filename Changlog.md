@@ -1,3 +1,8 @@
+# 0.3.1 - 2026-10-09
+- Inherit IPv6 and worker hooks directly from the pinned official Nginx image.
+- Sync the template hook to the image's upstream commit, including stream templates.
+- Preserve local failure handling and add real stream proxy checks.
+
 # 0.3.0 - 2026-10-09
 - Upgrade to Node.js 24.21.0, npm 11.19.0, Nginx mainline 1.31.6 and Alpine 3.24.
 - Use digest-pinned official images for AMD64 and ARM64.

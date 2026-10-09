@@ -26,7 +26,7 @@ docker run --rm nginx-with-nodejs:local node --version
 
 Images are published to `thornwu/nginx-with-nodejs` by version-tag releases.
 Use an existing explicit release tag from Docker Hub, for example
-`thornwu/nginx-with-nodejs:0.3.0`. Source and releases: [thornfe/docker-nginx-with-nodejs](https://github.com/thornfe/docker-nginx-with-nodejs).
+`thornwu/nginx-with-nodejs:0.3.1`. Source and releases: [thornfe/docker-nginx-with-nodejs](https://github.com/thornfe/docker-nginx-with-nodejs).
 The GitHub repository owner and Docker Hub namespace are independent; the
 Docker Hub image name remains unchanged for existing users. Release tags include the full
 version, minor version, major version, `latest`, and a source SHA tag; minor,
@@ -59,10 +59,18 @@ filter such as `NGINX_ENVSUBST_FILTER='^(UPSTREAM_HOST|UPSTREAM_PORT)$'`.
 | `NGINX_ENVSUBST_TEMPLATE_DIR` | `/etc/nginx/templates` |
 | `NGINX_ENVSUBST_TEMPLATE_SUFFIX` | `.template` |
 | `NGINX_ENVSUBST_OUTPUT_DIR` | `/etc/nginx/conf.d` |
+| `NGINX_ENVSUBST_STREAM_TEMPLATE_SUFFIX` | `.stream-template` for TCP/UDP configurations |
+| `NGINX_ENVSUBST_STREAM_OUTPUT_DIR` | `/etc/nginx/stream-conf.d` |
 | `NGINX_ENVSUBST_FILTER` | Empty: all exported variables; otherwise an awk regular expression |
 | `NGINX_ENTRYPOINT_QUIET_LOGS` | Nonempty value suppresses entrypoint logs |
 | `NGINX_ENTRYPOINT_WORKER_PROCESSES_AUTOTUNE` | Nonempty value enables CPU/cgroup-aware worker tuning |
 | `TZ` | Timezone, e.g. `Asia/Shanghai` |
+
+IPv6, resolver and worker tuning hooks are inherited from the pinned official
+Nginx image. Only the entrypoint and template hook are overridden locally.
+Stream templates generate TCP/UDP configuration and append a `stream` include
+when absent. If nginx.conf already has a stream block, include
+`/etc/nginx/stream-conf.d/*.conf` in that block yourself.
 
 Executable `.envsh` and `.sh` hooks in `/docker-entrypoint.d` run in version
 sort order when the command is `nginx` or `nginx-debug`. `.envsh` hooks are

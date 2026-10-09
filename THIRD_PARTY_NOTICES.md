@@ -5,7 +5,8 @@ replace licenses for upstream code or bundled software.
 
 | Component | Source/version | License text |
 | --- | --- | --- |
-| Copied Nginx Docker entrypoint and hooks | nginx/docker-nginx, original commit `5ce65c3efd395ee2d82d32670f233140e92dba99`; locally modified | `licenses/nginx-docker.BSD-2-Clause.txt` |
+| Copied Nginx Docker entrypoint | nginx/docker-nginx, original commit `5ce65c3efd395ee2d82d32670f233140e92dba99`; locally modified | `licenses/nginx-docker.BSD-2-Clause.txt` |
+| Nginx template hook and inherited image hooks | nginx/docker-nginx, image commit `ef5a25a6314e652a2dcfbce6074bef729f4d9639`; template hook locally modified | `licenses/nginx-docker.BSD-2-Clause.txt` |
 | Historical Node Docker installation recipe | nodejs/docker-node, original commit `cd7015f45666d2cd6e81f507ee362ca7ada1bfee` | `licenses/node-docker.MIT.txt` |
 | Node.js runtime and headers | 24.21.0, from the official Node Docker image | `licenses/node-LICENSE.txt`, including bundled dependency notices |
 | npm | 11.19.0, from the official Node Docker image | `licenses/npm-LICENSE.txt` and package notices in `/usr/local/lib/node_modules/npm` |

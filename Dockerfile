@@ -18,7 +18,9 @@ RUN apk add --no-cache libstdc++ ca-certificates \
     && node --version && npm --version && nginx -t
 
 COPY --chmod=755 docker-entrypoint.sh /
-COPY --chmod=755 10-listen-on-ipv6-by-default.sh 20-envsubst-on-templates.sh 30-tune-worker-processes.sh /docker-entrypoint.d/
+# Inherit IPv6, resolver and worker hooks from the pinned Nginx image.
+# Override only the template hook that needs our fail-fast behavior.
+COPY --chmod=755 20-envsubst-on-templates.sh /docker-entrypoint.d/
 COPY LICENSE THIRD_PARTY_NOTICES.md /usr/share/licenses/nginx-with-nodejs/
 COPY licenses/ /usr/share/licenses/nginx-with-nodejs/third-party/
 

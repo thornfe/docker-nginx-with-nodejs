@@ -69,6 +69,12 @@ server {
     location / { return 200 "${REVIEW_VALUE}"; }
 }
 CONF
+cat > /etc/nginx/templates/regression.conf.stream-template <<'CONF'
+server {
+    listen 8082;
+    proxy_pass 127.0.0.1:8081;
+}
+CONF
 /docker-entrypoint.sh nginx -g 'daemon off;' > /tmp/template-nginx.log 2>&1 &
 nginx_pid=$!
 trap 'kill -QUIT "$nginx_pid" 2>/dev/null || true' EXIT HUP INT TERM
@@ -79,6 +85,13 @@ until wget -qO- http://127.0.0.1:8081/ > /tmp/template-response 2>/dev/null; do
     sleep 1
 done
 [ "$(cat /tmp/template-response)" = from_hook ]
+[ "$(wget -qO- http://127.0.0.1:8082/)" = from_hook ]
+[ -s /etc/nginx/stream-conf.d/regression.conf ]
+# Read-only stream output must fail, rather than silently serving stale config.
+if NGINX_ENVSUBST_STREAM_OUTPUT_DIR=/tests /docker-entrypoint.d/20-envsubst-on-templates.sh; then
+    echo 'Read-only stream output failure was ignored' >&2
+    exit 1
+fi
 kill -QUIT "$nginx_pid"
 wait "$nginx_pid"
 trap - EXIT HUP INT TERM
