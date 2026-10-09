@@ -15,7 +15,11 @@ if [ "$1" = "nginx" -o "$1" = "nginx-debug" ]; then
         entrypoint_log "$0: /docker-entrypoint.d/ is not empty, will attempt to perform configuration"
 
         entrypoint_log "$0: Looking for shell scripts in /docker-entrypoint.d/"
-        find "/docker-entrypoint.d/" -follow -type f -print | sort -V | while read -r f; do
+        # Keep sourced exports in the shell that ultimately execs nginx.
+        # Hook filenames may contain spaces but must not contain newlines.
+        hooks=$(find "/docker-entrypoint.d/" -follow -type f -print | sort -V)
+        while IFS= read -r f <&3; do
+            [ -n "$f" ] || continue
             case "$f" in
                 *.envsh)
                     if [ -x "$f" ]; then
@@ -37,7 +41,9 @@ if [ "$1" = "nginx" -o "$1" = "nginx-debug" ]; then
                     ;;
                 *) entrypoint_log "$0: Ignoring $f";;
             esac
-        done
+        done 3<<EOF
+$hooks
+EOF
 
         entrypoint_log "$0: Configuration complete; ready for start up"
     else

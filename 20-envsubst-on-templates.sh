@@ -3,7 +3,7 @@
 
 set -e
 
-ME=$(basename $0)
+ME=$(basename "$0")
 
 entrypoint_log() {
     if [ -z "${NGINX_ENTRYPOINT_QUIET_LOGS:-}" ]; then
@@ -18,15 +18,15 @@ auto_envsubst() {
   local filter="${NGINX_ENVSUBST_FILTER:-}"
 
   local template defined_envs relative_path output_path subdir
-  defined_envs=$(printf '${%s} ' $(awk "END { for (name in ENVIRON) { print ( name ~ /${filter}/ ) ? name : \"\" } }" < /dev/null ))
+  defined_envs=$(awk -v filter="$filter" 'END { for (name in ENVIRON) { if (name ~ filter) printf "${%s} ", name } }' < /dev/null)
   [ -d "$template_dir" ] || return 0
   if [ ! -w "$output_dir" ]; then
     entrypoint_log "$ME: ERROR: $template_dir exists, but $output_dir is not writable"
-    return 0
+    return 1
   fi
   find "$template_dir" -follow -type f -name "*$suffix" -print | while read -r template; do
-    relative_path="${template#$template_dir/}"
-    output_path="$output_dir/${relative_path%$suffix}"
+    relative_path="${template#"$template_dir/"}"
+    output_path="$output_dir/${relative_path%"$suffix"}"
     subdir=$(dirname "$relative_path")
     # create a subdirectory where the template file exists
     mkdir -p "$output_dir/$subdir"
